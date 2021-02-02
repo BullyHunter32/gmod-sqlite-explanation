@@ -8,9 +8,9 @@ information about a player such as ban records, darkrp money, logs and others of
 Garrysmod already has an implemented database (one for each realm/state) and has an sql lib ready to be used so there is nothing you need to install.
 The function that is used to execute sql queries is
 
-
+```lua
 sql.Query( string query )
-
+```
 
 2) Usage      
 
@@ -19,9 +19,9 @@ In this example we will create one for storing people's steamid.
 
 We can create a table by using the key words 'CREATE TABLE' but it would better to use 'CREATE TABLE IF NOT EXISTS' so it does not overwrite any tables.
 In a query it would look like this,
-
+```lua
 sql.Query("CREATE TABLE IF NOT EXISTS steamid_saver( SteamID TEXT , Name TEXT )")
-
+```
 
 The two parameters given are SteamID with the data type TEXT (string) and also their Name which is also stored as a string.
 
@@ -32,7 +32,7 @@ I'll use the PlayerInitSpawn hook for this.
 Garrysmod has a function within the sql lib to filter out the dangerous inputs (sql.SQLStr). The first argument is the string, and the second argument is wether or not you want to remove the quotes which isn't ideal unless you're adding them manually.
 
 NOTE: THIS HOOK CAN ONLY BE USED IN THE SERVER REALM, ON THE CLIENT THIS WILL NOT DO ANYTHING
-
+```lua
 hook.Add("PlayerInitSpawn","SteamID_Saver",function( pPlayer )  
     if sql.Query(("SELECT * FROM steamid_saver WHERE SteamID='%s'"):format( pPlayer:SteamID64() )) then 
         print( pPlayer:Name(), " is already stored!")
@@ -44,14 +44,14 @@ hook.Add("PlayerInitSpawn","SteamID_Saver",function( pPlayer )
         sql.SQLStr(pPlayer:Name())
     ))
 end)
-
+```
 
 
 If we wanted to lookup a steamid within the database we would use the 'SELECT' and 'WHERE' keywords.
 The syntax for finding specific data is 'SELECT <values> FROM <tablename> WHERE <condition>'
 We can create a function for this to make it easier to fetch data instead of using sql.Query every time.
 
-
+```lua
 function getNameBySteamID( SteamID64 )
     if !SteamID64 then return end
     local query = sql.Query(("SELECT Name from steamid_saver WHERE SteamID='%s'"):format( SteamID64 )) or {} -- It may return false if your syntax is incorrect so I added 'or {}' as a fallback
@@ -63,4 +63,4 @@ function getNameBySteamID( SteamID64 )
 end
 
 print( getNameBySteamID( Entity(1):SteamID64() ) ) -- This would print your name at the time of when it was stored
-
+```
