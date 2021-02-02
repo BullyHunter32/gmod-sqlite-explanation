@@ -28,20 +28,22 @@ The two parameters given are SteamID with the data type TEXT (string) and also t
 You can insert values into this table using the `INSERT` keyword. In this example I will store their name and steamid when they spawn in.
 I'll use the PlayerInitSpawn hook for this.
 
+Garrysmod has a function within the sql lib to filter out the dangerous inputs (sql.SQLStr). The first argument is the string, and the second argument is wether or not you want to remove the quotes which isn't ideal unless you're adding them manually.
 
 NOTE: THIS CAN ONLY BE DONE IN THE SERVER REALM
 
 hook.Add("PlayerInitSpawn","SteamID_Saver",function( pPlayer )  
-    if sql.Query("SELECT * FROM steamid_saver WHERE SteamID='%s'"):format( pPlayer:SteamID64() ) then 
+    if sql.Query(("SELECT * FROM steamid_saver WHERE SteamID='%s'"):format( pPlayer:SteamID64() )) then 
         print( pPlayer:Name(), " is already stored!")
         return 
     end
-    
-    sql.Query("INSERT INTO steamid_saver( SteamID , Name ) VALUES( '%s' , '%s' "):format( -- Its more convenient to format the string so it doesn't ge messy.
-        pPlayer:SteamID64(),
-        pPlayer:Name()
-    )
+    print("Storing player ".. pPlayer:Name() )
+    sql.Query(("INSERT INTO steamid_saver( SteamID , Name ) VALUES( %s , %s )"):format( -- Its more convenient to format the string so it doesn't get messy.
+        sql.SQLStr(pPlayer:SteamID64()),
+        sql.SQLStr(pPlayer:Name())
+    ))
 end)
+
 
 
 If we wanted to lookup a steamid within the database we would use the 'SELECT' and 'WHERE' keywords.
@@ -50,15 +52,14 @@ We can create a function for this to make it easier to fetch data instead of usi
 
 
 function getNameBySteamID( SteamID64 )
-    local query = sql.Query("SELECT Name from steamid_saver WHERE SteamID='%s'"):format( SteamID64 )
-    if query then
+    if !SteamID64 then return end
+    local query = sql.Query(("SELECT Name from steamid_saver WHERE SteamID='%s'"):format( SteamID64 )) or {} -- It may return false if your syntax is incorrect so I added 'or {}' as a fallback
+    
+    if #query > 0 then
         return query[1].Name -- When selecting data from a database you are returned a table of tables which meet the condition
     end
     return "Player not found!"
 end
 
-
-If I were to get my own name by my SteamID it would look something like
-
-print( getNameBySteamID( player.GetAll()[1]:SteamID64() ) )
+print( getNameBySteamID( Entity(1):SteamID64() ) ) -- This would print your name at the time of when it was stored
 
