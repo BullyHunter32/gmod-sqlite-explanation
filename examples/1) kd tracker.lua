@@ -7,14 +7,21 @@ local function addStat( SteamID, Type )
     shitToUpdate[SteamID][Type] = shitToUpdate[SteamID][Type] + 1 -- incrementing the value by 1
 end
 
+local function getStats( SteamID64 )
+    local query = sql.Query(("SELECT Kills,Deaths FROM kd_tracker WHERE SteamID='%s'"):format(SteamID64))
+    if !query or #query == 0 then return end
+    return query[1].Kills, query[1].Deaths
+end 
+
 local function updateTracker()
     for k,v in pairs( shitToUpdate ) do
         if not sql.Query(("SELECT * FROM kd_tracker WHERE SteamID='%s'"):format( k )) then
             sql.Query(("INSERT INTO kd_tracker( SteamID, Kills, Deaths ) VALUES( '%s', 0, 0 )"):format( k ))
         end
+        local kills,deaths = getStats( k )
         sql.Query(("UPDATE kd_tracker SET Kills=%d, Deaths=%d WHERE SteamID='%s'"):format(
-            v.kills,
-            v.deaths,
+            kills + v.kills,
+            deaths + v.deaths,
             k
         ))
         print("[Tracker] Updated KD Stats for ", k )
