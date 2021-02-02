@@ -19,9 +19,10 @@ In this example we will create one for storing people's steamid.
 
 We can create a table by using the key words 'CREATE TABLE' but it would better to use 'CREATE TABLE IF NOT EXISTS' so it does not overwrite any tables.
 In a query it would look like this,
-```
+
 sql.Query("CREATE TABLE IF NOT EXISTS steamid_saver( SteamID TEXT , Name TEXT )")
-```
+
+
 The two parameters given are SteamID with the data type TEXT (string) and also their Name which is also stored as a string.
 
 
