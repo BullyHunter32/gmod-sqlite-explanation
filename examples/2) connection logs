@@ -22,7 +22,7 @@ local function updatePlayer( Player )
         return
     end
     sql.Query(("UPDATE ConnectionLogs SET Name='%s', lastOnline=%d, timesConnected=%d"):format(
-        Player:Name(),
+        sql.SQLStr(Player:Name()),
         os.time(),
         getValue( SteamID, "timesConnected") + 1
     ))
