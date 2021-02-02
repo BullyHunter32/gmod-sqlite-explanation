@@ -31,7 +31,7 @@ I'll use the PlayerInitSpawn hook for this.
 
 Garrysmod has a function within the sql lib to filter out the dangerous inputs (sql.SQLStr). The first argument is the string, and the second argument is wether or not you want to remove the quotes which isn't ideal unless you're adding them manually.
 
-NOTE: THIS CAN ONLY BE DONE IN THE SERVER REALM
+NOTE: THIS HOOK CAN ONLY BE USED IN THE SERVER REALM, ON THE CLIENT THIS WILL NOT DO ANYTHING
 
 hook.Add("PlayerInitSpawn","SteamID_Saver",function( pPlayer )  
     if sql.Query(("SELECT * FROM steamid_saver WHERE SteamID='%s'"):format( pPlayer:SteamID64() )) then 
