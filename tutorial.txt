@@ -8,11 +8,11 @@ information about a player such as ban records, darkrp money, logs and others of
 Garrysmod already has an implemented database (one for each realm/state) and has an sql lib ready to be used so there is nothing you need to install.
 The function that is used to execute sql queries is
 
-```lua
-sql.Query( string query )
-```
 
-2) Usage
+sql.Query( string query )
+
+
+2) Usage      
 
 Before you can use sqlite you need to have a table that you can use.
 In this example we will create one for storing people's steamid.
@@ -28,8 +28,10 @@ The two parameters given are SteamID with the data type TEXT (string) and also t
 You can insert values into this table using the `INSERT` keyword. In this example I will store their name and steamid when they spawn in.
 I'll use the PlayerInitSpawn hook for this.
 
-```lua
-hook.Add("PlayerInitSpawn","SteamID_Saver",function( pPlayer )
+
+NOTE: THIS CAN ONLY BE DONE IN THE SERVER REALM
+
+hook.Add("PlayerInitSpawn","SteamID_Saver",function( pPlayer )  
     if sql.Query("SELECT * FROM steamid_saver WHERE SteamID='%s'"):format( pPlayer:SteamID64() ) then 
         print( pPlayer:Name(), " is already stored!")
         return 
@@ -40,11 +42,12 @@ hook.Add("PlayerInitSpawn","SteamID_Saver",function( pPlayer )
         pPlayer:Name()
     )
 end)
-```
+
 
 If we wanted to lookup a steamid within the database we would use the 'SELECT' and 'WHERE' keywords.
 The syntax for finding specific data is 'SELECT <values> FROM <tablename> WHERE <condition>'
 We can create a function for this to make it easier to fetch data instead of using sql.Query every time.
+
 
 function getNameBySteamID( SteamID64 )
     local query = sql.Query("SELECT Name from steamid_saver WHERE SteamID='%s'"):format( SteamID64 )
@@ -53,4 +56,9 @@ function getNameBySteamID( SteamID64 )
     end
     return "Player not found!"
 end
+
+
+If I were to get my own name by my SteamID it would look something like
+
+print( getNameBySteamID( player.GetAll()[1]:SteamID64() ) )
 
