@@ -54,10 +54,3 @@ function getNameBySteamID( SteamID64 )
     return "Player not found!"
 end
 
-
-
-```
-function test() {
-  console.log("notice the blank line before this function?");
-}
-```
