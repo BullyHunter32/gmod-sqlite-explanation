@@ -8,7 +8,7 @@ information about a player such as ban records, darkrp money, logs and others of
 Garrysmod already has an implemented database (one for each realm/state) and has an sql lib ready to be used so there is nothing you need to install.
 The function that is used to execute sql queries is
 
-```
+```lua
 sql.Query( string query )
 ```
 
@@ -28,7 +28,7 @@ The two parameters given are SteamID with the data type TEXT (string) and also t
 You can insert values into this table using the `INSERT` keyword. In this example I will store their name and steamid when they spawn in.
 I'll use the PlayerInitSpawn hook for this.
 
-```
+```lua
 hook.Add("PlayerInitSpawn","SteamID_Saver",function( pPlayer )
     if sql.Query("SELECT * FROM steamid_saver WHERE SteamID='%s'"):format( pPlayer:SteamID64() ) then 
         print( pPlayer:Name(), " is already stored!")
