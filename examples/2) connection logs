@@ -1,0 +1,34 @@
+
+sql.Query("CREATE TABLE IF NOT EXISTS ConnectionLogs( SteamID TEXT , Name TEXT , lastOnline INT , timesConnected INT )")
+
+local function getValue( SteamID, Value )
+    local query = sql.Query(("SELECT %s FROM ConnectionLogs WHERE SteamID='%s'"):format(Value,SteamID)) 
+    if !query or !query[1] or !query[1][Value] then return end
+    return query[1][Value]
+end 
+
+local function updatePlayer( Player )
+    local SteamID = Player:SteamID64() or "0"
+    local query = sql.Query(("SELECT * FROM ConnectionLogs WHERE SteamID='%s'"):format(SteamID)) 
+    print("Query :", query )
+    if not query or #query == 0 then
+        sql.Query(("INSERT INTO ConnectionLogs( SteamID , Name, lastOnline, timesConnected ) VALUES( '%s', %s, %d, %d )"):format(
+            SteamID,
+            sql.SQLStr( Player:Name() ),
+            os.time(),
+            1
+        ))
+        print("Inserted player for the first time")
+        return
+    end
+    sql.Query(("UPDATE ConnectionLogs SET Name='%s', lastOnline=%d, timesConnected=%d"):format(
+        Player:Name(),
+        os.time(),
+        getValue( SteamID, "timesConnected") + 1
+    ))
+end
+
+
+hook.Add("PlayerInitialSpawn", "UpdateConnectionLogs", function( pPlayer )
+    updatePlayer( pPlayer )
+end)
