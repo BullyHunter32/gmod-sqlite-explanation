@@ -39,7 +39,7 @@ hook.Add("PlayerInitSpawn","SteamID_Saver",function( pPlayer )
         return 
     end
     print("Storing player ".. pPlayer:Name() )
-    sql.Query(("INSERT INTO steamid_saver( SteamID , Name ) VALUES( %s , %s )"):format( -- Its more convenient to format the string so it doesn't get messy.
+    sql.Query(("INSERT INTO steamid_saver( SteamID , Name ) VALUES( '%s' , %s )"):format( -- Its more convenient to format the string so it doesn't get messy.
         pPlayer:SteamID64(),
         sql.SQLStr(pPlayer:Name())
     ))
